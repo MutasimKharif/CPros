@@ -1,13 +1,13 @@
 <?php
 // --- DATABASE CREDENTIALS ---
 // Replace with your actual database details
-$servername = "localhost";
-$username = "your_username";
-$password = "your_password";
-$dbname = "your_database_name";
+$servername = "localhost,8080";
+$user_id= "sa";
+$password = "Moe5rief$";
+$dbname = "Websites";
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Create connection f46ebdbf7a5b8fa80cfdecda3c18f132c3ce359b15aeabb97e73c537835029f8
+$conn = new mysqli($servername= localhost, 8080, $user_id=sa, $Moe5rief$, $Websites);
 
 // Check connection
 if ($conn->connect_error) {
