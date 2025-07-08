@@ -1,0 +1,63 @@
+{
+  "cloudServices": [
+    {
+      "icon": "<svg class='w-10 h-10 text-[#FF9900]' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z'/></svg>",
+      "title": "Cloud Migration & Strategy",
+      "description": "Seamlessly migrate your infrastructure to AWS with our proven methodologies, minimizing downtime and maximizing performance."
+    },
+    {
+      "icon": "<svg class='w-10 h-10 text-green-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01'/></svg>",
+      "title": "DevOps & Automation",
+      "description": "Accelerate your development lifecycle with our CI/CD pipeline implementation, infrastructure as code, and automated monitoring."
+    },
+    {
+      "icon": "<svg class='w-10 h-10 text-red-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 20.944a12.02 12.02 0 009 3.044 12.02 12.02 0 009-3.044 12.02 12.02 0 00-2.382-9.044z'/></svg>",
+      "title": "Security & Compliance",
+      "description": "Protect your cloud assets with our robust security solutions, including threat detection, identity management, and compliance audits."
+    },
+    {
+      "icon": "<svg class='w-10 h-10 text-purple-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7s0 0 0 0z'/></svg>",
+      "title": "Data & Analytics",
+      "description": "Unlock insights from your data with our AWS data lake and analytics services, from data warehousing to machine learning."
+    }
+  ],
+  "networkingServices": [
+    {
+      "icon": "<svg class='w-10 h-10 text-cyan-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m4.632 2.684C15.114 12.938 15 12.482 15 12s.114-.938.316-1.342m-5.248 0c1.063-2.246 3.937-2.246 5 0m-5 2.684c1.063 2.246 3.937 2.246 5 0M4 6h16M4 12h16M4 18h16'/></svg>",
+      "title": "Network Architecture & Design",
+      "description": "Design and implement secure, scalable, and resilient network topologies on AWS using VPC, Subnets, and Transit Gateways."
+    },
+    {
+      "icon": "<svg class='w-10 h-10 text-orange-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'/></svg>",
+      "title": "Firewall & Security Groups",
+      "description": "Configure and manage AWS WAF, Network Firewalls, and Security Groups to protect your applications from common threats."
+    },
+    {
+        "icon": "<svg class='w-10 h-10 text-blue-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h8a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.938 6.124a9 9 0 118.124 0M12 21a9 9 0 000-18'/></svg>",
+        "title": "DNS Management (Route 53)",
+        "description": "Manage your domain names and route end-user requests to your application endpoints with Amazon Route 53."
+    }
+  ],
+  "teamMembers": [
+    {
+      "name": "Mutasim Kharif",
+      "role": "CEO & Cloud Architect",
+      "imageUrl": "https://placehold.co/400x400/E2E8F0/4A5568?text=MK"
+    },
+    {
+      "name": "Bashar Wahsh",
+      "role": "Head of DevOps",
+      "imageUrl": "https://placehold.co/400x400/E2E8F0/4A5568?text=BW"
+    },
+    {
+      "name": "Mohammed Al-Zahrani",
+      "role": "Lead Security Analyst",
+      "imageUrl": "https://placehold.co/400x400/E2E8F0/4A5568?text=MA"
+    },
+    {
+        "name": "Diana Prince",
+        "role": "Data Science Lead",
+        "imageUrl": "https://placehold.co/400x400/E2E8F0/4A5568?text=DP"
+    }
+  ]
+}
