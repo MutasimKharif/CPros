@@ -1,0 +1,8 @@
+{
+    "database-client.terminalLocation": "Panel",
+    "database-client.autoSync": true,
+    "database-client.completionTriggerKey": [
+         "database-client.telemetry.usesOnlineServices", false,
+        "."
+    ]
+}
