@@ -1,0 +1,79 @@
+<?php
+require 'db.php';
+session_start();
+
+if ($_SESSION['role'] !== 'admin') {
+    die("Access denied.");
+}
+
+// Approve user
+if (isset($_GET['approve'])) {
+    $stmt = $pdo->prepare("UPDATE users SET approved = 1 WHERE id = ?");
+    $stmt->execute([$_GET['approve']]);
+}
+
+// Update role
+if (isset($_POST['update_role'])) {
+    $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
+    $stmt->execute([$_POST['role'], $_POST['user_id']]);
+}
+
+// Fetch users
+$users = $pdo->query("SELECT * FROM users")->fetchAll();
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<link rel="stylesheet" href="https://cdn.tailwindcss.com">
+</head>
+<body class="p-6 bg-gray-100">
+<h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+
+<table class="min-w-full bg-white shadow-md rounded">
+<tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Approved</th><th>Actions</th></tr>
+<?php foreach ($users as $user): ?>
+<tr class="border-t">
+<td><?= htmlspecialchars($user['id']) ?></td>
+<td><?= htmlspecialchars($user['username']) ?></td>
+<td><?= htmlspecialchars($user['email']) ?></td>
+<td><?= htmlspecialchars($user['role']) ?></td>
+<td><?= $user['approved'] ? 'Yes' : 'No' ?></td>
+<td>
+    <?php if (!$user['approved']): ?>
+        <a href="?approve=<?= $user['id'] ?>" class="text-blue-500">Approve</a>
+    <?php endif; ?>
+    <form method="POST" class="inline">
+        <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+        <select name="role">
+            <option value="user" <?= $user['role']=='user'?'selected':'' ?>>User</option>
+            <option value="admin" <?= $user['role']=='admin'?'selected':'' ?>>Admin</option>
+        </select>
+        <button type="submit" name="update_role" class="text-green-500">Update</button>
+    </form>
+</td>
+</tr>
+<?php endforeach; ?>
+</table>
+<h2 class="text-xl font-bold mt-10 mb-4">Contact Form Submissions</h2>
+
+<table class="min-w-full bg-white shadow-md rounded">
+<tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Contact</th><th>Message</th><th>Submitted At</th></tr>
+<?php
+$submissions = $pdo->query("SELECT * FROM contact_submissions ORDER BY submitted_at DESC")->fetchAll();
+
+foreach ($submissions as $submission): ?>
+<tr class="border-t">
+<td><?= htmlspecialchars($submission['id']) ?></td>
+<td><?= htmlspecialchars($submission['name']) ?></td>
+<td><?= htmlspecialchars($submission['email']) ?></td>
+<td><?= htmlspecialchars($submission['company']) ?></td>
+<td><?= htmlspecialchars($submission['contact_number']) ?></td>
+<td><?= nl2br(htmlspecialchars($submission['message'])) ?></td>
+<td><?= htmlspecialchars($submission['submitted_at']) ?></td>
+</tr>
+<?php endforeach; ?>
+</table>
+</body>
+</html>
