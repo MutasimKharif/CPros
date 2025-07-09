@@ -1,49 +1,65 @@
 <?php
-// --- DATABASE CREDENTIALS ---
-// Replace with your actual database details
-$servername = "localhost,8080";
-$user_id= "sa";
-$password = "Moe5rief$";
-$dbname = "Websites";
+// Config
+$to = "m77esmaiel@gmail.com.com";  // Change to your desired email
+$subject = "New Contact Form Submission";
 
-// Create connection f46ebdbf7a5b8fa80cfdecda3c18f132c3ce359b15aeabb97e73c537835029f8
-$conn = new mysqli($servername= localhost, 8080, $user_id=sa, $Moe5rief$, $Websites);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Sanitize helper
+function sanitize($data) {
+    return htmlspecialchars(strip_tags(trim($data)));
 }
 
-// --- FORM DATA PROCESSING ---
-// Check if the form was submitted using the POST method
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // Get and sanitize form data
-    $fullName = htmlspecialchars($_POST['full_name']);
-    $email = htmlspecialchars($_POST['email']);
-    $company = htmlspecialchars($_POST['company_name']);
-    $contactNumber = htmlspecialchars($_POST['contact_number']);
-    $message = htmlspecialchars($_POST['message']);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $name = sanitize($_POST['name'] ?? '');
+    $email = sanitize($_POST['email'] ?? '');
+    $company = sanitize($_POST['company'] ?? '');
+    $contact = sanitize($_POST['contact'] ?? '');
+    $message = sanitize($_POST['message'] ?? '');
 
-    // --- PREPARE AND BIND THE SQL STATEMENT ---
-    // Using prepared statements to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO contacts (full_name, email, company_name, contact_number, message) VALUES (?, ?, ?, ?, ?)");
-    
-    // The "sssss" indicates that all five parameters are strings
-    $stmt->bind_param("sssss", $fullName, $email, $company, $contactNumber, $message);
+    $errors = [];
 
-    // --- EXECUTE AND PROVIDE FEEDBACK ---
-    if ($stmt->execute()) {
-        echo "Thank you! Your message has been sent successfully.";
-    } else {
-        echo "Error: " . $stmt->error;
+    if (empty($name)) $errors[] = "Name is required.";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email is required.";
+    if (empty($company)) $errors[] = "Company is required.";
+    if (empty($contact) || !is_numeric($contact)) $errors[] = "Valid contact number is required.";
+    if (empty($message)) $errors[] = "Message is required.";
+
+    if (!empty($errors)) {
+        echo "<h3>Errors:</h3><ul>";
+        foreach ($errors as $err) {
+            echo "<li>" . $err . "</li>";
+        }
+        echo "</ul>";
+        echo "<a href='contact.html'>Go back</a>";
+        exit;
     }
 
-    // Close the statement and connection
-    $stmt->close();
-    $conn->close();
+    // Email body
+    $body = <<<EOD
+New message from Contact Form:
+
+Name: {$name}
+Email: {$email}
+Company: {$company}
+Contact Number: {$contact}
+
+Message:
+{$message}
+EOD;
+
+    // Send email
+    $headers = "From: {$email}" . "\r\n" .
+               "Reply-To: {$email}" . "\r\n" .
+               "X-Mailer: PHP/" . phpversion();
+
+    if (mail($to, $subject, $body, $headers)) {
+        echo "<h2>Thank you, {$name}. Your message has been sent successfully!</h2>";
+    } else {
+        echo "<h2>Sorry, there was a problem sending your message. Please try again later.</h2>";
+    }
+
+    echo "<a href='index.html'>Return to Home</a>";
 } else {
-    // If not a POST request, redirect back to the form or show an error
-    echo "Invalid request method.";
+    header("Location: contact.html");
+    exit;
 }
 ?>
