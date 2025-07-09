@@ -74,4 +74,15 @@
         </footer>
 
 </body>
+<script>
+document.getElementById('signup-form').addEventListener('submit', function(e) {
+    const pwd = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    if (pwd !== confirm) {
+        e.preventDefault();
+        alert('Passwords do not match.');
+    }
+});
+</script>
+
 </html>
