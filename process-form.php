@@ -1,4 +1,5 @@
 <?php
+require 'db.php'; 
 // Config
 $to = "m77esmaiel@gmail.com.com";  // Change to your desired email
 $subject = "New Contact Form Submission";
@@ -56,7 +57,14 @@ EOD;
     } else {
         echo "<h2>Sorry, there was a problem sending your message. Please try again later.</h2>";
     }
+    // Insert into DB
+    $stmt = $pdo->prepare("
+        INSERT INTO contact_submissions (name, email, company, contact_number, message)
+        VALUES (?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([$name, $email, $company, $contact, $message]);
 
+    echo "<h2>Thank you, {$name}. Your message has been recorded and will be reviewed.</h2>";
     echo "<a href='index.html'>Return to Home</a>";
 } else {
     header("Location: contact.html");
