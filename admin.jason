@@ -1,0 +1,67 @@
+<?php
+// Set the content type to JSON so the browser knows how to handle the response.
+header('Content-Type: application/json');
+
+// --- DATABASE CREDENTIALS ---
+// Replace with your actual database details
+$servername = "localhost";
+$username = "Mutasim";
+$password = "Moe5rief$";
+$dbname = "moedb";
+
+// Create and check the database connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    // If connection fails, return a JSON error message and stop the script.
+    echo json_encode(['error' => 'Database connection failed: ' . $conn->connect_error]);
+    exit();
+}
+
+// --- DATA FETCHING LOGIC ---
+// Use a parameter in the URL (admin.php?fetch=contacts) to decide what data to get.
+$dataType = isset($_GET['fetch']) ? $_GET['fetch'] : '';
+
+$sql = '';
+$data = [];
+
+// Use a switch statement to build the correct SQL query based on the request.
+switch ($dataType) {
+    case 'contacts':
+        $sql = "SELECT id, full_name, email, company_name, submission_date FROM contacts ORDER BY submission_date DESC";
+        break;
+    case 'users':
+        // IMPORTANT: We explicitly DO NOT select the password_hash for security.
+        $sql = "SELECT user_id, username, email, full_name, created_at FROM users ORDER BY created_at DESC";
+        break;
+    case 'admins':
+        // IMPORTANT: We explicitly DO NOT select the password_hash for security.
+        $sql = "SELECT admin_id, username, email, full_name, last_login, created_at FROM admin_users ORDER BY created_at DESC";
+        break;
+    default:
+        // If the 'fetch' parameter is invalid or missing, return an error.
+        echo json_encode(['error' => 'Invalid data type requested.']);
+        exit();
+}
+
+// Execute the query
+$result = $conn->query($sql);
+
+if ($result) {
+    // If the query is successful, fetch all rows into an associative array.
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+} else {
+    // If the query fails, return a JSON error.
+    echo json_encode(['error' => 'Failed to execute query: ' . $conn->error]);
+    $conn->close();
+    exit();
+}
+
+// --- OUTPUT ---
+// Encode the data array into a JSON string and output it.
+echo json_encode($data);
+
+// Close the database connection.
+$conn->close();
+?>
