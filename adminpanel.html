@@ -1,79 +1,144 @@
-<?php
-require 'db.php';
-session_start();
-
-if ($_SESSION['role'] !== 'admin') {
-    die("Access denied.");
-}
-
-// Approve user
-if (isset($_GET['approve'])) {
-    $stmt = $pdo->prepare("UPDATE users SET approved = 1 WHERE id = ?");
-    $stmt->execute([$_GET['approve']]);
-}
-
-// Update role
-if (isset($_POST['update_role'])) {
-    $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
-    $stmt->execute([$_POST['role'], $_POST['user_id']]);
-}
-
-// Fetch users
-$users = $pdo->query("SELECT * FROM users")->fetchAll();
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Admin Panel</title>
-<link rel="stylesheet" href="https://cdn.tailwindcss.com">
+   <meta charset="UTF-8dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudPros - AWS Cloud Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="p-6 bg-gray-100">
-<h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+<body class="bg-gray-100">
 
-<table class="min-w-full bg-white shadow-md rounded">
-<tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Approved</th><th>Actions</th></tr>
-<?php foreach ($users as $user): ?>
-<tr class="border-t">
-<td><?= htmlspecialchars($user['id']) ?></td>
-<td><?= htmlspecialchars($user['username']) ?></td>
-<td><?= htmlspecialchars($user['email']) ?></td>
-<td><?= htmlspecialchars($user['role']) ?></td>
-<td><?= $user['approved'] ? 'Yes' : 'No' ?></td>
-<td>
-    <?php if (!$user['approved']): ?>
-        <a href="?approve=<?= $user['id'] ?>" class="text-blue-500">Approve</a>
-    <?php endif; ?>
-    <form method="POST" class="inline">
-        <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-        <select name="role">
-            <option value="user" <?= $user['role']=='user'?'selected':'' ?>>User</option>
-            <option value="admin" <?= $user['role']=='admin'?'selected':'' ?>>Admin</option>
-        </select>
-        <button type="submit" name="update_role" class="text-green-500">Update</button>
-    </form>
-</td>
-</tr>
-<?php endforeach; ?>
-</table>
-<h2 class="text-xl font-bold mt-10 mb-4">Contact Form Submissions</h2>
+    <div class="flex h-screen bg-gray-800 text-white">
+        <aside class="w-64 flex-shrink-0">
+            <div class="p-6">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 text-[#FF9900]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+                    <span class="text-2xl font-bold">CloudPros</span>
+                </a>
+            </div>
+            <nav class="mt-8">
+                <a href="#dashboard" class="sidebar-link active flex items-center py-3 px-6 transition duration-200" data-target="dashboard-section">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#messages" class="sidebar-link flex items-center py-3 px-6 transition duration-200" data-target="messages-section">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    <span>Contact Messages</span>
+                </a>
+                <a href="#users" class="sidebar-link flex items-center py-3 px-6 transition duration-200" data-target="users-section">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 21a6 6 0 006-6v-1a6 6 0 00-9-5.197" /></svg>
+                    <span>Manage Users</span>
+                </a>
+                <a href="#admins" class="sidebar-link flex items-center py-3 px-6 transition duration-200" data-target="admins-section">
+                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    <span>Manage Admins</span>
+                </a>
+            </nav>
+        </aside>
 
-<table class="min-w-full bg-white shadow-md rounded">
-<tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Contact</th><th>Message</th><th>Submitted At</th></tr>
-<?php
-$submissions = $pdo->query("SELECT * FROM contact_submissions ORDER BY submitted_at DESC")->fetchAll();
+        <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
+            
+            <section id="dashboard-section" class="admin-section">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h2 class="text-lg font-semibold text-gray-600">Total Contact Messages</h2>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">15</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h2 class="text-lg font-semibold text-gray-600">Registered Users</h2>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">128</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h2 class="text-lg font-semibold text-gray-600">Administrators</h2>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">3</p>
+                    </div>
+                </div>
+            </section>
 
-foreach ($submissions as $submission): ?>
-<tr class="border-t">
-<td><?= htmlspecialchars($submission['id']) ?></td>
-<td><?= htmlspecialchars($submission['name']) ?></td>
-<td><?= htmlspecialchars($submission['email']) ?></td>
-<td><?= htmlspecialchars($submission['company']) ?></td>
-<td><?= htmlspecialchars($submission['contact_number']) ?></td>
-<td><?= nl2br(htmlspecialchars($submission['message'])) ?></td>
-<td><?= htmlspecialchars($submission['submitted_at']) ?></td>
-</tr>
-<?php endforeach; ?>
-</table>
+            <section id="messages-section" class="admin-section hidden">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">Contact Form Messages</h1>
+                <div class="bg-white p-6 rounded-lg shadow overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="p-4">Name</th>
+                                <th class="p-4">Email</th>
+                                <th class="p-4">Company</th>
+                                <th class="p-4">Received</th>
+                                <th class="p-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4">John Doe</td>
+                                <td class="p-4">john.doe@example.com</td>
+                                <td class="p-4">Example Corp</td>
+                                <td class="p-4">2025-07-08 14:30</td>
+                                <td class="p-4 space-x-2">
+                                    <button class="text-blue-600 hover:underline">View</button>
+                                    <button class="text-red-600 hover:underline">Delete</button>
+                                </td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4">Jane Smith</td>
+                                <td class="p-4">jane.smith@example.com</td>
+                                <td class="p-4">Smith Inc.</td>
+                                <td class="p-4">2025-07-08 11:15</td>
+                                <td class="p-4 space-x-2">
+                                    <button class="text-blue-600 hover:underline">View</button>
+                                    <button class="text-red-600 hover:underline">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="users-section" class="admin-section hidden">
+                 <h1 class="text-3xl font-bold text-gray-800 mb-6">Manage Users</h1>
+                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b"><th class="p-4">User ID</th><th class="p-4">Username</th><th class="p-4">Email</th><th class="p-4">Full Name</th><th class="p-4">Date Joined</th><th class="p-4">Actions</th></tr>
+                        </thead>
+                        <tbody>
+                             <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4">101</td><td class="p-4">user_one</td><td class="p-4">user1@example.com</td><td class="p-4">User One</td><td class="p-4">2025-06-20</td><td class="p-4 space-x-2"><button class="text-blue-600 hover:underline">Edit</button><button class="text-red-600 hover:underline">Delete</button></td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4">102</td><td class="p-4">user_two</td><td class="p-4">user2@example.com</td><td class="p-4">User Two</td><td class="p-4">2025-06-25</td><td class="p-4 space-x-2"><button class="text-blue-600 hover:underline">Edit</button><button class="text-red-600 hover:underline">Delete</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                 </div>
+            </section>
+            
+            <section id="admins-section" class="admin-section hidden">
+                 <h1 class="text-3xl font-bold text-gray-800 mb-6">Manage Admins</h1>
+                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b"><th class="p-4">Admin ID</th><th class="p-4">Username</th><th class="p-4">Email</th><th class="p-4">Full Name</th><th class="p-4">Last Login</th><th class="p-4">Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4">1</td><td class="p-4">admin_mutasim</td><td class="p-4">m.kharif@cloudpros.com</td><td class="p-4">Mutasim Kharif</td><td class="p-4">2025-07-08 16:00</td><td class="p-4 space-x-2"><button class="text-blue-600 hover:underline">Edit</button><button class="text-red-600 hover:underline">Delete</button></td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4">2</td><td class="p-4">admin_bash</td><td class="p-4">bash@cloudpros.com</td><td class="p-4">Bash</td><td class="p-4">2025-07-07 10:00</td><td class="p-4 space-x-2"><button class="text-blue-600 hover:underline">Edit</button><button class="text-red-600 hover:underline">Delete</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                 </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="adminpanel.php"></script>
 </body>
 </html>
