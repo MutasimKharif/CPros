@@ -1,69 +1,60 @@
 <?php
-// Set the content type to JSON to ensure the browser interprets the output correctly.
-header('Content-Type: application/json');
+require 'db.php';
+session_start();
 
-// --- DATABASE CREDENTIALS ---
-// Replace with your actual database details from your hosting provider.
-$servername = "localhost";
-$username = "root";
-$password = "Moe5rief$";
-$dbname = "moedb";
-
-// --- DATABASE CONNECTION ---
-// Create and check the database connection.
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    // If the connection fails, return a JSON error message and stop the script.
-    // In a real application, you would log this error instead of showing it.
-    echo json_encode(['error' => 'Database connection failed: ' . $conn->connect_error]);
-    exit();
+if ($_SESSION['role'] !== 'admin') {
+    die("Access denied.");
 }
 
-// --- DATA FETCHING ROUTING ---
-// Use a parameter in the URL (e.g., admin.php?fetch=contacts) to decide what data to get.
-$dataType = isset($_GET['fetch']) ? $_GET['fetch'] : '';
-
-$sql = '';
-$data = [];
-
-// Use a switch statement to build the correct SQL query based on the 'fetch' parameter.
-switch ($dataType) {
-    case 'contacts':
-        $sql = "SELECT id, full_name, email, company_name, contact_number, submission_date FROM contacts ORDER BY submission_date DESC";
-        break;
-    case 'users':
-        // SECURITY: We explicitly DO NOT select the password_hash.
-        $sql = "SELECT user_id, username, email, full_name, created_at FROM users ORDER BY created_at DESC";
-        break;
-    case 'admins':
-        // SECURITY: We explicitly DO NOT select the password_hash.
-        $sql = "SELECT admin_id, username, email, full_name, last_login, created_at FROM admin_users ORDER BY created_at DESC";
-        break;
-    default:
-        // If the 'fetch' parameter is invalid or missing, return an error and exit.
-        echo json_encode(['error' => 'Invalid data type requested.']);
-        exit();
+// Approve user
+if (isset($_GET['approve'])) {
+    $stmt = $pdo->prepare("UPDATE users SET approved = 1 WHERE id = ?");
+    $stmt->execute([$_GET['approve']]);
 }
 
-// Execute the query.
-$result = $conn->query($sql);
-
-if ($result) {
-    // If the query is successful, fetch all rows into an associative array.
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
-    }
-} else {
-    // If the query fails, return a JSON error with the database error message.
-    echo json_encode(['error' => 'Failed to execute query: ' . $conn->error]);
-    $conn->close();
-    exit();
+// Update role
+if (isset($_POST['update_role'])) {
+    $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
+    $stmt->execute([$_POST['role'], $_POST['user_id']]);
 }
 
-// --- OUTPUT ---
-// Encode the final data array into a JSON string and output it.
-echo json_encode($data);
-
-// Close the database connection.
-$conn->close();
+// Fetch users
+$users = $pdo->query("SELECT * FROM users")->fetchAll();
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<link rel="stylesheet" href="https://cdn.tailwindcss.com">
+</head>
+<body class="p-6 bg-gray-100">
+<h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+
+<table class="min-w-full bg-white shadow-md rounded">
+<tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Approved</th><th>Actions</th></tr>
+<?php foreach ($users as $user): ?>
+<tr class="border-t">
+<td><?= htmlspecialchars($user['id']) ?></td>
+<td><?= htmlspecialchars($user['username']) ?></td>
+<td><?= htmlspecialchars($user['email']) ?></td>
+<td><?= htmlspecialchars($user['role']) ?></td>
+<td><?= $user['approved'] ? 'Yes' : 'No' ?></td>
+<td>
+    <?php if (!$user['approved']): ?>
+        <a href="?approve=<?= $user['id'] ?>" class="text-blue-500">Approve</a>
+    <?php endif; ?>
+    <form method="POST" class="inline">
+        <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+        <select name="role">
+            <option value="user" <?= $user['role']=='user'?'selected':'' ?>>User</option>
+            <option value="admin" <?= $user['role']=='admin'?'selected':'' ?>>Admin</option>
+        </select>
+        <button type="submit" name="update_role" class="text-green-500">Update</button>
+    </form>
+</td>
+</tr>
+<?php endforeach; ?>
+</table>
+</body>
+</html>
