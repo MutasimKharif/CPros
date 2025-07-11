@@ -56,5 +56,24 @@ $users = $pdo->query("SELECT * FROM users")->fetchAll();
 </tr>
 <?php endforeach; ?>
 </table>
+    <h2 class="text-xl font-bold mt-10 mb-4">Contact Form Submissions</h2>
+
+<table class="min-w-full bg-white shadow-md rounded">
+<tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Contact</th><th>Message</th><th>Submitted At</th></tr>
+<?php
+$submissions = $pdo->query("SELECT * FROM contact_submissions ORDER BY submitted_at DESC")->fetchAll();
+
+foreach ($submissions as $submission): ?>
+<tr class="border-t">
+<td><?= htmlspecialchars($submission['id']) ?></td>
+<td><?= htmlspecialchars($submission['name']) ?></td>
+<td><?= htmlspecialchars($submission['email']) ?></td>
+<td><?= htmlspecialchars($submission['company']) ?></td>
+<td><?= htmlspecialchars($submission['contact_number']) ?></td>
+<td><?= nl2br(htmlspecialchars($submission['message'])) ?></td>
+<td><?= htmlspecialchars($submission['submitted_at']) ?></td>
+</tr>
+<?php endforeach; ?>
+</table>
 </body>
 </html>
