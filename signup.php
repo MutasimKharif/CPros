@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_POST['last_name'],
             $_POST['middle_name']
         ]);
-        header("Location: signin.html");
+        header("Location: signup.html");
     } catch (PDOException $e) {
         die("Error: " . $e->getMessage());
     }
