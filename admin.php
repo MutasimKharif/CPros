@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 // --- DATABASE CREDENTIALS ---
 // Replace with your actual database details from your hosting provider.
 $servername = "localhost";
-$username = "Mutasim";
+$username = "root";
 $password = "Moe5rief$";
 $dbname = "moedb";
 
