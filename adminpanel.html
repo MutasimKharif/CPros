@@ -1,144 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8dir="ltr">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudPros - AWS Cloud Solutions</title>
+    <title>Admin Panel - CloudPros</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Style for the active sidebar link */
+        .sidebar-link.active { background-color: #FF9900; color: white; }
+        .sidebar-link:not(.active):hover { background-color: #374151; }
+        /* Styles for modals */
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease-in-out; }
+        .modal-content { transition: transform 0.3s ease-in-out; transform: scale(0.95); }
+        .modal-backdrop.flex .modal-content { transform: scale(1); }
+        /* A standardized button style for tables */
+        .table-action-button { @apply px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2; }
+        /* Loading spinner animation */
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #FF9900; /* Orange */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
 <body class="bg-gray-100">
 
     <div class="flex h-screen bg-gray-800 text-white">
+        <!-- Sidebar Navigation -->
         <aside class="w-64 flex-shrink-0">
             <div class="p-6">
-                <a href="index.html" class="flex items-center space-x-2">
+                <a href="#" class="flex items-center space-x-2">
                     <svg class="h-8 w-8 text-[#FF9900]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
                     <span class="text-2xl font-bold">CloudPros</span>
                 </a>
             </div>
             <nav class="mt-8">
-                <a href="#dashboard" class="sidebar-link active flex items-center py-3 px-6 transition duration-200" data-target="dashboard-section">
+                <a href="#dashboard" class="sidebar-link active flex items-center py-3 px-6" data-target="dashboard-section">
                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     <span>Dashboard</span>
                 </a>
-                <a href="#messages" class="sidebar-link flex items-center py-3 px-6 transition duration-200" data-target="messages-section">
+                <a href="#requests" class="sidebar-link flex items-center py-3 px-6" data-target="requests-section">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3"></path></svg>
+                    <span>Join Requests</span>
+                </a>
+                <a href="#messages" class="sidebar-link flex items-center py-3 px-6" data-target="messages-section">
                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                     <span>Contact Messages</span>
                 </a>
-                <a href="#users" class="sidebar-link flex items-center py-3 px-6 transition duration-200" data-target="users-section">
+                <a href="#users" class="sidebar-link flex items-center py-3 px-6" data-target="users-section">
                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 21a6 6 0 006-6v-1a6 6 0 00-9-5.197" /></svg>
                     <span>Manage Users</span>
                 </a>
-                <a href="#admins" class="sidebar-link flex items-center py-3 px-6 transition duration-200" data-target="admins-section">
+                <a href="#admins" class="sidebar-link flex items-center py-3 px-6" data-target="admins-section">
                      <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                     <span>Manage Admins</span>
                 </a>
             </nav>
         </aside>
 
-        <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 lg:p-10 overflow-y-auto relative">
             
-            <section id="dashboard-section" class="admin-section">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h2 class="text-lg font-semibold text-gray-600">Total Contact Messages</h2>
-                        <p class="text-3xl font-bold text-gray-800 mt-2">15</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h2 class="text-lg font-semibold text-gray-600">Registered Users</h2>
-                        <p class="text-3xl font-bold text-gray-800 mt-2">128</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h2 class="text-lg font-semibold text-gray-600">Administrators</h2>
-                        <p class="text-3xl font-bold text-gray-800 mt-2">3</p>
-                    </div>
-                </div>
-            </section>
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="absolute inset-0 bg-gray-100 bg-opacity-75 flex items-center justify-center z-50">
+                <div class="loader"></div>
+            </div>
 
-            <section id="messages-section" class="admin-section hidden">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">Contact Form Messages</h1>
-                <div class="bg-white p-6 rounded-lg shadow overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="p-4">Name</th>
-                                <th class="p-4">Email</th>
-                                <th class="p-4">Company</th>
-                                <th class="p-4">Received</th>
-                                <th class="p-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4">John Doe</td>
-                                <td class="p-4">john.doe@example.com</td>
-                                <td class="p-4">Example Corp</td>
-                                <td class="p-4">2025-07-08 14:30</td>
-                                <td class="p-4 space-x-2">
-                                    <button class="text-blue-600 hover:underline">View</button>
-                                    <button class="text-red-600 hover:underline">Delete</button>
-                                </td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4">Jane Smith</td>
-                                <td class="p-4">jane.smith@example.com</td>
-                                <td class="p-4">Smith Inc.</td>
-                                <td class="p-4">2025-07-08 11:15</td>
-                                <td class="p-4 space-x-2">
-                                    <button class="text-blue-600 hover:underline">View</button>
-                                    <button class="text-red-600 hover:underline">Delete</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="users-section" class="admin-section hidden">
-                 <h1 class="text-3xl font-bold text-gray-800 mb-6">Manage Users</h1>
-                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="border-b"><th class="p-4">User ID</th><th class="p-4">Username</th><th class="p-4">Email</th><th class="p-4">Full Name</th><th class="p-4">Date Joined</th><th class="p-4">Actions</th></tr>
-                        </thead>
-                        <tbody>
-                             <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4">101</td><td class="p-4">user_one</td><td class="p-4">user1@example.com</td><td class="p-4">User One</td><td class="p-4">2025-06-20</td><td class="p-4 space-x-2"><button class="text-blue-600 hover:underline">Edit</button><button class="text-red-600 hover:underline">Delete</button></td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4">102</td><td class="p-4">user_two</td><td class="p-4">user2@example.com</td><td class="p-4">User Two</td><td class="p-4">2025-06-25</td><td class="p-4 space-x-2"><button class="text-blue-600 hover:underline">Edit</button><button class="text-red-600 hover:underline">Delete</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                 </div>
-            </section>
-            
-            <section id="admins-section" class="admin-section hidden">
-                 <h1 class="text-3xl font-bold text-gray-800 mb-6">Manage Admins</h1>
-                 <div class="bg-white p-6 rounded-lg shadow overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="border-b"><th class="p-4">Admin ID</th><th class="p-4">Username</th><th class="p-4">Email</th><th class="p-4">Full Name</th><th class="p-4">Last Login</th><th class="p-4">Actions</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4">1</td><td class="p-4">admin_mutasim</td><td class="p-4">m.kharif@cloudpros.com</td><td class="p-4">Mutasim Kharif</td><td class="p-4">2025-07-08 16:00</td><td class="p-4 space-x-2"><button class="text-blue-600 hover:underline">Edit</button><button class="text-red-600 hover:underline">Delete</button></td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4">2</td><td class="p-4">admin_bash</td><td class="p-4">bash@cloudpros.com</td><td class="p-4">Bash</td><td class="p-4">2025-07-07 10:00</td><td class="p-4 space-x-2"><button class="text-blue-600 hover:underline">Edit</button><button class="text-red-600 hover:underline">Delete</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                 </div>
-            </section>
-
+            <!-- Sections will be populated by JavaScript -->
+            <section id="dashboard-section" class="admin-section"></section>
+            <section id="requests-section" class="admin-section hidden"></section>
+            <section id="messages-section" class="admin-section hidden"></section>
+            <section id="users-section" class="admin-section hidden"></section>
+            <section id="admins-section" class="admin-section hidden"></section>
         </main>
     </div>
 
-    <script src="adminpanel.php"></script>
+    <!-- Modals -->
+    <!-- View Message Modal -->
+    <div id="message-modal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 lg:w-1/3 p-6 modal-content text-gray-800">
+            <h2 class="text-2xl font-bold mb-4" id="modal-message-name"></h2>
+            <p class="text-sm text-gray-500 mb-1"><strong>Email:</strong> <span id="modal-message-email"></span></p>
+            <p class="text-sm text-gray-500 mb-4"><strong>Company:</strong> <span id="modal-message-company"></span></p>
+            <div class="bg-gray-100 p-4 rounded-md max-h-60 overflow-y-auto">
+                <p id="modal-message-body" class="whitespace-pre-wrap"></p>
+            </div>
+            <div class="mt-6 text-right">
+                <button onclick="closeModal('message-modal')" class="table-action-button bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal (for delete actions) -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/3 lg:w-1/4 p-6 modal-content text-gray-800">
+            <h2 class="text-xl font-bold mb-4" id="confirm-modal-title"></h2>
+            <p id="confirm-modal-body"></p>
+            <div class="mt-6 flex justify-end space-x-4">
+                <button onclick="closeModal('confirm-modal')" class="table-action-button bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400">Cancel</button>
+                <button id="confirm-modal-button" class="table-action-button bg-red-600 text-white hover:bg-red-700 focus:ring-red-500">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- CONFIGURATION ---
+    const API_URL = 'api.php'; // The path to your PHP backend file
+
+    // --- GLOBAL DOM ELEMENTS ---
+    const sections = document.querySelectorAll('.admin-section');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const mainContent = document.querySelector('main');
+
+    let appData = {}; // To store all fetched data, acting as a client-side cache
+
+    // --- UTILITY FUNCTIONS ---
+    window.openModal = (id) => document.getElementById(id).classList.replace('hidden', 'flex');
+    window.closeModal = (id) => document.getElementById(id).classList.replace('flex', 'hidden');
+    const showLoader = () => loadingOverlay.style.display = 'flex';
+    const hideLoader = () => loadingOverlay.style.display = 'none';
+
+    // --- API COMMUNICATION ---
+    /**
+     * Fetches data from a GET endpoint of the API.
+     * @param {string} endpoint - The API action to call (e.g., 'get_stats').
+     * @returns {Promise<object|null>} The JSON data or null on failure.
+     */
+    async function fetchData(endpoint) {
+        try {
+            const response = await fetch(`${API_URL}?action=${endpoint}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            if (result.error) throw new Error(result.error);
+            return result;
+        } catch (error) {
+            console.error(`[FETCH ERROR] Failed to get '${endpoint}':`, error);
+            return null; // Return null to indicate failure
+        }
+    }
+
+    /**
+     * Sends data to a POST endpoint of the API.
+     * @param {string} action - The API action to call (e.g., 'approve_request').
+     * @param {object} body - The JSON data to send in the request body.
+     * @returns {Promise<object|null>} The JSON response or null on failure.
+     */
+    async function postAction(action, body) {
+        try {
+            const response = await fetch(`${API_URL}?action=${action}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const result = await response.json();
+            if (!response.ok || result.error) throw new Error(result.error || 'API request failed');
+            return result;
+        } catch (error) {
+            console.error(`[POST ERROR] Failed to perform '${action}':`, error);
+            alert(`Error: ${error.message}`); // User-facing error for POST actions
+            return null;
+        }
+    }
+
+    // --- DYNAMIC RENDERING FUNCTIONS ---
+    const renderDashboard = (stats) => {
+        const section = document.getElementById('dashboard-section');
+        section.innerHTML = `
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-lg font-semibold text-gray-600">New Join Requests</h2><p class="text-3xl font-bold text-gray-800 mt-2">${stats.requests}</p></div>
+                <div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-lg font-semibold text-gray-600">Contact Messages</h2><p class="text-3xl font-bold text-gray-800 mt-2">${stats.messages}</p></div>
+                <div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-lg font-semibold text-gray-600">Registered Users</h2><p class="text-3xl font-bold text-gray-800 mt-2">${stats.users}</p></div>
+                <div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-lg font-semibold text-gray-600">Administrators</h2><p class="text-3xl font-bold text-gray-800 mt-2">${stats.admins}</p></div>
+            </div>`;
+    };
+    
+    const renderTable = (sectionId, title, headers, data, rowBuilder) => {
+        const section = document.getElementById(sectionId);
+        const headerHtml = headers.map(h => `<th class="p-4 text-left font-semibold text-gray-600">${h}</th>`).join('');
+        const bodyHtml = data.length ? data.map(rowBuilder).join('') : `<tr><td colspan="${headers.length}" class="p-4 text-center text-gray-500">No data available.</td></tr>`;
+        section.innerHTML = `
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">${title}</h1>
+            <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                <table class="w-full">
+                    <thead><tr class="border-b">${headerHtml}</tr></thead>
+                    <tbody>${bodyHtml}</tbody>
+                </table>
+            </div>`;
+    };
+
+    // --- ROW BUILDER FUNCTIONS ---
+    const createRequestRow = (req) => `
+        <tr class="border-b hover:bg-gray-50 text-gray-700">
+            <td class="p-4">${req.username}</td><td class="p-4">${req.email}</td><td class="p-4">${req.fullName}</td><td class="p-4">${new Date(req.requestDate).toLocaleDateString()}</td>
+            <td class="p-4 space-x-2">
+                <button class="table-action-button bg-green-500 text-white hover:bg-green-600 focus:ring-green-400" data-action="approve_request" data-id="${req.id}">Approve</button>
+                <button class="table-action-button bg-red-500 text-white hover:bg-red-600 focus:ring-red-400" data-action="deny_request" data-id="${req.id}">Deny</button>
+            </td>
+        </tr>`;
+    const createMessageRow = (msg) => `
+        <tr class="border-b hover:bg-gray-50 text-gray-700">
+            <td class="p-4">${msg.name}</td><td class="p-4">${msg.email}</td><td class="p-4">${msg.company || 'N/A'}</td><td class="p-4">${new Date(msg.received).toLocaleString()}</td>
+            <td class="p-4 space-x-2">
+                <button class="table-action-button bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-400" data-action="view_message" data-id="${msg.id}">View</button>
+                <button class="table-action-button bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-400" data-action="delete_item" data-type="messages" data-id="${msg.id}">Delete</button>
+            </td>
+        </tr>`;
+    const createUserRow = (user) => `
+        <tr class="border-b hover:bg-gray-50 text-gray-700">
+            <td class="p-4">${user.id}</td><td class="p-4">${user.username}</td><td class="p-4">${user.email}</td><td class="p-4">${user.fullName}</td><td class="p-4">${new Date(user.dateJoined).toLocaleDateString()}</td>
+            <td class="p-4"><button class="table-action-button bg-red-500 text-white hover:bg-red-600 focus:ring-red-400" data-action="delete_item" data-type="users" data-id="${user.id}">Delete</button></td>
+        </tr>`;
+    const createAdminRow = (admin) => `
+        <tr class="border-b hover:bg-gray-50 text-gray-700">
+            <td class="p-4">${admin.id}</td><td class="p-4">${admin.username}</td><td class="p-4">${admin.email}</td><td class="p-4">${admin.fullName}</td><td class="p-4">${admin.lastLogin ? new Date(admin.lastLogin).toLocaleString() : 'Never'}</td>
+            <td class="p-4"><button class="table-action-button bg-red-500 text-white hover:bg-red-600 focus:ring-red-400" data-action="delete_item" data-type="admins" data-id="${admin.id}">Delete</button></td>
+        </tr>`;
+
+    // --- EVENT HANDLERS & ACTIONS ---
+    async function handleTableAction(e) {
+        const button = e.target.closest('button[data-action]');
+        if (!button) return;
+
+        const { action, id, type } = button.dataset;
+        const numId = id ? parseInt(id, 10) : null;
+
+        switch (action) {
+            case 'approve_request':
+            case 'deny_request':
+            case 'delete_item':
+                const confirmTitle = {
+                    deny_request: 'Deny Request',
+                    delete_item: 'Confirm Deletion'
+                }[action] || 'Confirm Action';
+                
+                const confirmBody = {
+                    deny_request: 'Are you sure you want to deny and delete this user request?',
+                    delete_item: `Are you sure you want to permanently delete this ${type.slice(0, -1)}? This cannot be undone.`
+                }[action] || 'Are you sure?';
+
+                if (action === 'approve_request') {
+                    showLoader();
+                    await postAction('approve_request', { id: numId });
+                    await fetchAllDataAndRender();
+                } else {
+                    showConfirmModal(confirmTitle, confirmBody, async () => {
+                        showLoader();
+                        const postPromise = action === 'deny_request' 
+                            ? postAction('deny_request', { id: numId })
+                            : postAction('delete_item', { id: numId, type: type });
+                        await postPromise;
+                        await fetchAllDataAndRender();
+                    });
+                }
+                break;
+
+            case 'view_message':
+                const message = appData.messages.find(m => m.id === numId);
+                if (message) {
+                    document.getElementById('modal-message-name').textContent = message.name;
+                    document.getElementById('modal-message-email').textContent = message.email;
+                    document.getElementById('modal-message-company').textContent = message.company || 'N/A';
+                    document.getElementById('modal-message-body').textContent = message.message;
+                    openModal('message-modal');
+                }
+                break;
+        }
+    }
+    
+    const showConfirmModal = (title, body, onConfirm) => {
+        document.getElementById('confirm-modal-title').textContent = title;
+        document.getElementById('confirm-modal-body').textContent = body;
+        const confirmButton = document.getElementById('confirm-modal-button');
+        
+        // Clone and replace the button to remove old event listeners, preventing multiple fires
+        const newConfirmButton = confirmButton.cloneNode(true);
+        confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+        
+        newConfirmButton.addEventListener('click', () => {
+            onConfirm();
+            closeModal('confirm-modal');
+        }, { once: true }); // Ensure the listener only ever fires once per opening
+        
+        openModal('confirm-modal');
+    };
+
+    const displayError = (message) => {
+        hideLoader();
+        const activeSection = document.querySelector('.admin-section:not(.hidden)') || document.getElementById('dashboard-section');
+        activeSection.innerHTML = `
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">
+                <strong class="font-bold">An Error Occurred!</strong>
+                <span class="block sm:inline">${message}</span>
+            </div>`;
+    }
+
+    // --- INITIALIZATION ---
+    async function fetchAllDataAndRender() {
+        showLoader();
+        // Fetch all data points in parallel for speed
+        const [stats, requests, messages, users, admins] = await Promise.all([
+            fetchData('get_stats'),
+            fetchData('get_requests'),
+            fetchData('get_messages'),
+            fetchData('get_users'),
+            fetchData('get_admins')
+        ]);
+        
+        // Check if any of the crucial fetches failed
+        if ([stats, requests, messages, users, admins].some(data => data === null)) {
+            displayError("Failed to load data from the server. Please check the API endpoint and database connection.");
+            return;
+        }
+
+        // Store data in our client-side cache
+        appData = { stats, requests, messages, users, admins };
+
+        // Render all components with the new data
+        renderDashboard(stats);
+        renderTable('requests-section', 'New User Join Requests', ['Username', 'Email', 'Full Name', 'Request Date', 'Actions'], requests, createRequestRow);
+        renderTable('messages-section', 'Contact Form Messages', ['Name', 'Email', 'Company', 'Received', 'Actions'], messages, createMessageRow);
+        renderTable('users-section', 'Manage Users', ['User ID', 'Username', 'Email', 'Full Name', 'Date Joined', 'Actions'], users, createUserRow);
+        renderTable('admins-section', 'Manage Admins', ['Admin ID', 'Username', 'Email', 'Full Name', 'Last Login', 'Actions'], admins, createAdminRow);
+        
+        hideLoader();
+    }
+
+    // --- EVENT LISTENERS SETUP ---
+    // Sidebar navigation logic
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('data-target');
+            
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            sections.forEach(section => section.classList.add('hidden'));
+            document.getElementById(targetId).classList.remove('hidden');
+            
+            // Update URL hash for deep linking
+            window.location.hash = targetId.replace('-section', '');
+        });
+    });
+
+    // Event delegation for all actions in the main content area
+    mainContent.addEventListener('click', handleTableAction);
+
+    // --- INITIAL PAGE LOAD ---
+    // Check for a hash in the URL on page load
+    const initialHash = window.location.hash.substring(1);
+    if (initialHash) {
+        const targetLink = document.querySelector(`.sidebar-link[data-target="${initialHash}-section"]`);
+        if (targetLink) {
+            targetLink.click();
+        }
+    }
+
+    // Fetch all data and render the page for the first time
+    fetchAllDataAndRender();
+});
+</script>
 </body>
 </html>
