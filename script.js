@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () =>
+    {
     const pageName = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-
+    };
 // --- TEMPLATE GENERATORS ---
     const createHeaderHTML = (activePage) => {
         const pages = [
